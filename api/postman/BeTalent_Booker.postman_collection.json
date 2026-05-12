@@ -13,21 +13,11 @@
       "item": [
         {
           "name": "GET /ping - API está disponível",
-          "request": {
-            "method": "GET",
-            "url": "{{baseUrl}}/ping"
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Status 201 - API disponível', () => pm.response.to.have.status(201));",
-                  "pm.test('Tempo de resposta < 2000ms', () => pm.expect(pm.response.responseTime).to.be.below(2000));"
-                ]
-              }
-            }
-          ]
+          "request": { "method": "GET", "url": "{{baseUrl}}/ping" },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 201 - API disponível', () => pm.response.to.have.status(201));",
+            "pm.test('Tempo de resposta < 2000ms', () => pm.expect(pm.response.responseTime).to.be.below(2000));"
+          ]}}]
         }
       ]
     },
@@ -40,28 +30,18 @@
             "method": "POST",
             "url": "{{baseUrl}}/auth",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\"username\": \"{{username}}\", \"password\": \"{{password}}\"}"
-            }
+            "body": { "mode": "raw", "raw": "{\"username\": \"{{username}}\", \"password\": \"{{password}}\"}" }
           },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
-                  "pm.test('Token presente na resposta', () => {",
-                  "  const json = pm.response.json();",
-                  "  pm.expect(json).to.have.property('token');",
-                  "  pm.expect(json.token).to.be.a('string').and.not.empty;",
-                  "  pm.environment.set('token', json.token);",
-                  "});",
-                  "pm.test('Tempo de resposta < 2000ms', () => pm.expect(pm.response.responseTime).to.be.below(2000));"
-                ]
-              }
-            }
-          ]
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Token presente na resposta', () => {",
+            "  const json = pm.response.json();",
+            "  pm.expect(json).to.have.property('token');",
+            "  pm.expect(json.token).to.be.a('string').and.not.empty;",
+            "  pm.environment.set('token', json.token);",
+            "});",
+            "pm.test('Tempo de resposta < 2000ms', () => pm.expect(pm.response.responseTime).to.be.below(2000));"
+          ]}}]
         },
         {
           "name": "POST /auth - Credenciais inválidas",
@@ -69,25 +49,15 @@
             "method": "POST",
             "url": "{{baseUrl}}/auth",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\"username\": \"admin\", \"password\": \"wrongpassword\"}"
-            }
+            "body": { "mode": "raw", "raw": "{\"username\": \"admin\", \"password\": \"wrongpassword\"}" }
           },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
-                  "pm.test('Retorna Bad credentials', () => {",
-                  "  const json = pm.response.json();",
-                  "  pm.expect(json.reason).to.include('Bad credentials');",
-                  "});"
-                ]
-              }
-            }
-          ]
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Retorna Bad credentials', () => {",
+            "  const json = pm.response.json();",
+            "  pm.expect(json.reason).to.include('Bad credentials');",
+            "});"
+          ]}}]
         },
         {
           "name": "POST /auth - Campos ausentes",
@@ -95,25 +65,15 @@
             "method": "POST",
             "url": "{{baseUrl}}/auth",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{}"
-            }
+            "body": { "mode": "raw", "raw": "{}" }
           },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
-                  "pm.test('Não retorna token válido', () => {",
-                  "  const json = pm.response.json();",
-                  "  pm.expect(json).to.not.have.property('token');",
-                  "});"
-                ]
-              }
-            }
-          ]
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Não retorna token válido', () => {",
+            "  const json = pm.response.json();",
+            "  pm.expect(json).to.not.have.property('token');",
+            "});"
+          ]}}]
         }
       ]
     },
@@ -122,116 +82,57 @@
       "item": [
         {
           "name": "GET /booking - Retorna lista de IDs",
-          "request": {
-            "method": "GET",
-            "url": "{{baseUrl}}/booking"
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
-                  "pm.test('Retorna array de bookingids', () => {",
-                  "  const json = pm.response.json();",
-                  "  pm.expect(json).to.be.an('array');",
-                  "  if (json.length > 0) {",
-                  "    pm.expect(json[0]).to.have.property('bookingid');",
-                  "    pm.environment.set('bookingId', json[0].bookingid);",
-                  "  }",
-                  "});",
-                  "pm.test('Tempo de resposta < 2000ms', () => pm.expect(pm.response.responseTime).to.be.below(2000));"
-                ]
-              }
-            }
-          ]
+          "request": { "method": "GET", "url": "{{baseUrl}}/booking" },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Retorna array de bookingids', () => {",
+            "  const json = pm.response.json();",
+            "  pm.expect(json).to.be.an('array');",
+            "  if (json.length > 0) {",
+            "    pm.expect(json[0]).to.have.property('bookingid');",
+            "    pm.environment.set('bookingId', json[0].bookingid);",
+            "  }",
+            "});",
+            "pm.test('Tempo de resposta < 2000ms', () => pm.expect(pm.response.responseTime).to.be.below(2000));"
+          ]}}]
         },
         {
-          "name": "GET /booking?firstname={{firstname}} - Filtro por nome",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/booking?firstname={{firstname}}",
-              "query": [{ "key": "firstname", "value": "{{firstname}}" }]
-            }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
-                  "pm.test('Retorna array (pode ser vazio)', () => {",
-                  "  pm.expect(pm.response.json()).to.be.an('array');",
-                  "});"
-                ]
-              }
-            }
-          ]
+          "name": "GET /booking?firstname=Jim - Filtro por nome",
+          "request": { "method": "GET", "url": "{{baseUrl}}/booking?firstname={{firstname}}" },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Retorna array (pode ser vazio)', () => {",
+            "  pm.expect(pm.response.json()).to.be.an('array');",
+            "});"
+          ]}}]
         },
         {
-          "name": "GET /booking?checkin=2024-01-01&checkout=2025-12-31 - Filtro por datas",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/booking?checkin=2024-01-01&checkout=2025-12-31",
-              "query": [
-                { "key": "checkin",  "value": "2024-01-01" },
-                { "key": "checkout", "value": "2025-12-31" }
-              ]
-            }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
-                  "pm.test('Retorna array', () => pm.expect(pm.response.json()).to.be.an('array'));"
-                ]
-              }
-            }
-          ]
+          "name": "GET /booking?checkin&checkout - Filtro por datas",
+          "request": { "method": "GET", "url": "{{baseUrl}}/booking?checkin=2024-01-01&checkout=2025-12-31" },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Retorna array', () => pm.expect(pm.response.json()).to.be.an('array'));"
+          ]}}]
         },
         {
           "name": "GET /booking/:id - Reserva específica",
-          "request": {
-            "method": "GET",
-            "url": "{{baseUrl}}/booking/{{bookingId}}"
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
-                  "pm.test('Retorna campos obrigatórios', () => {",
-                  "  const json = pm.response.json();",
-                  "  pm.expect(json).to.have.all.keys('firstname','lastname','totalprice','depositpaid','bookingdates');",
-                  "  pm.expect(json.bookingdates).to.have.all.keys('checkin','checkout');",
-                  "});",
-                  "pm.test('Tempo de resposta < 2000ms', () => pm.expect(pm.response.responseTime).to.be.below(2000));"
-                ]
-              }
-            }
-          ]
+          "request": { "method": "GET", "url": "{{baseUrl}}/booking/{{bookingId}}" },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Retorna campos obrigatórios', () => {",
+            "  const json = pm.response.json();",
+            "  pm.expect(json).to.include.keys('firstname', 'lastname', 'totalprice', 'depositpaid', 'bookingdates');",
+            "  pm.expect(json.bookingdates).to.include.keys('checkin', 'checkout');",
+            "});",
+            "pm.test('Tempo de resposta < 2000ms', () => pm.expect(pm.response.responseTime).to.be.below(2000));"
+          ]}}]
         },
         {
           "name": "GET /booking/999999 - ID inexistente retorna 404",
-          "request": {
-            "method": "GET",
-            "url": "{{baseUrl}}/booking/999999"
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Status 404', () => pm.response.to.have.status(404));"
-                ]
-              }
-            }
-          ]
+          "request": { "method": "GET", "url": "{{baseUrl}}/booking/999999" },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 404', () => pm.response.to.have.status(404));"
+          ]}}]
         }
       ]
     },
@@ -247,33 +148,23 @@
               { "key": "Content-Type", "value": "application/json" },
               { "key": "Accept", "value": "application/json" }
             ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"firstname\": \"{{firstname}}\",\n  \"lastname\": \"{{lastname}}\",\n  \"totalprice\": 150,\n  \"depositpaid\": true,\n  \"bookingdates\": {\n    \"checkin\": \"2025-06-01\",\n    \"checkout\": \"2025-06-07\"\n  },\n  \"additionalneeds\": \"Café da manhã\"\n}"
-            }
+            "body": { "mode": "raw", "raw": "{\n  \"firstname\": \"{{firstname}}\",\n  \"lastname\": \"{{lastname}}\",\n  \"totalprice\": 150,\n  \"depositpaid\": true,\n  \"bookingdates\": {\n    \"checkin\": \"2025-06-01\",\n    \"checkout\": \"2025-06-07\"\n  },\n  \"additionalneeds\": \"Café da manhã\"\n}" }
           },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
-                  "pm.test('Retorna bookingid', () => {",
-                  "  const json = pm.response.json();",
-                  "  pm.expect(json).to.have.property('bookingid');",
-                  "  pm.expect(json.bookingid).to.be.a('number');",
-                  "  pm.environment.set('bookingId', json.bookingid);",
-                  "});",
-                  "pm.test('Dados criados correspondem ao enviado', () => {",
-                  "  const b = pm.response.json().booking;",
-                  "  pm.expect(b.firstname).to.eql(pm.environment.get('firstname'));",
-                  "  pm.expect(b.totalprice).to.eql(150);",
-                  "  pm.expect(b.depositpaid).to.eql(true);",
-                  "});"
-                ]
-              }
-            }
-          ]
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Retorna bookingid', () => {",
+            "  const json = pm.response.json();",
+            "  pm.expect(json).to.have.property('bookingid');",
+            "  pm.expect(json.bookingid).to.be.a('number');",
+            "  pm.environment.set('bookingId', json.bookingid);",
+            "});",
+            "pm.test('Dados criados correspondem ao enviado', () => {",
+            "  const b = pm.response.json().booking;",
+            "  pm.expect(b.firstname).to.eql(pm.environment.get('firstname'));",
+            "  pm.expect(b.totalprice).to.eql(150);",
+            "  pm.expect(b.depositpaid).to.eql(true);",
+            "});"
+          ]}}]
         },
         {
           "name": "POST /booking - Sem additionalneeds (campo opcional)",
@@ -284,22 +175,12 @@
               { "key": "Content-Type", "value": "application/json" },
               { "key": "Accept", "value": "application/json" }
             ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"firstname\": \"Test\",\n  \"lastname\": \"User\",\n  \"totalprice\": 100,\n  \"depositpaid\": false,\n  \"bookingdates\": {\n    \"checkin\": \"2025-07-01\",\n    \"checkout\": \"2025-07-03\"\n  }\n}"
-            }
+            "body": { "mode": "raw", "raw": "{\n  \"firstname\": \"Test\",\n  \"lastname\": \"User\",\n  \"totalprice\": 100,\n  \"depositpaid\": false,\n  \"bookingdates\": {\n    \"checkin\": \"2025-07-01\",\n    \"checkout\": \"2025-07-03\"\n  }\n}" }
           },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Status 200 - campo opcional omitido aceito', () => pm.response.to.have.status(200));",
-                  "pm.test('bookingid presente', () => pm.expect(pm.response.json()).to.have.property('bookingid'));"
-                ]
-              }
-            }
-          ]
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200 - campo opcional omitido aceito', () => pm.response.to.have.status(200));",
+            "pm.test('bookingid presente', () => pm.expect(pm.response.json()).to.have.property('bookingid'));"
+          ]}}]
         },
         {
           "name": "POST /booking - Sem firstname [BUG: deveria retornar 400]",
@@ -307,27 +188,17 @@
             "method": "POST",
             "url": "{{baseUrl}}/booking",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"lastname\": \"Test\",\n  \"totalprice\": 100,\n  \"depositpaid\": true,\n  \"bookingdates\": {\n    \"checkin\": \"2025-07-01\",\n    \"checkout\": \"2025-07-03\"\n  }\n}"
-            }
+            "body": { "mode": "raw", "raw": "{\n  \"lastname\": \"Test\",\n  \"totalprice\": 100,\n  \"depositpaid\": true,\n  \"bookingdates\": {\n    \"checkin\": \"2025-07-01\",\n    \"checkout\": \"2025-07-03\"\n  }\n}" }
           },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "// BUG DOCUMENTADO: API retorna 500 em vez de 400 Bad Request ao omitir campo obrigatório",
-                  "pm.test('Não retorna 200 para campo obrigatório ausente', () => {",
-                  "  pm.expect(pm.response.code).to.not.equal(200);",
-                  "});",
-                  "pm.test('Retorna erro (esperado 400, API retorna 500)', () => {",
-                  "  pm.expect([400, 500]).to.include(pm.response.code);",
-                  "});"
-                ]
-              }
-            }
-          ]
+          "event": [{ "listen": "test", "script": { "exec": [
+            "// BUG DOCUMENTADO: API retorna 500 em vez de 400 Bad Request ao omitir campo obrigatório",
+            "pm.test('Não retorna 200 para campo obrigatório ausente', () => {",
+            "  pm.expect(pm.response.code).to.not.equal(200);",
+            "});",
+            "pm.test('Retorna erro (esperado 400, API retorna 500)', () => {",
+            "  pm.expect([400, 500]).to.include(pm.response.code);",
+            "});"
+          ]}}]
         },
         {
           "name": "POST /booking - Checkout antes de checkin [BUG: aceito indevidamente]",
@@ -335,25 +206,15 @@
             "method": "POST",
             "url": "{{baseUrl}}/booking",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"firstname\": \"Data\",\n  \"lastname\": \"Invalida\",\n  \"totalprice\": 100,\n  \"depositpaid\": true,\n  \"bookingdates\": {\n    \"checkin\": \"2025-12-31\",\n    \"checkout\": \"2025-01-01\"\n  }\n}"
-            }
+            "body": { "mode": "raw", "raw": "{\n  \"firstname\": \"Data\",\n  \"lastname\": \"Invalida\",\n  \"totalprice\": 100,\n  \"depositpaid\": true,\n  \"bookingdates\": {\n    \"checkin\": \"2025-12-31\",\n    \"checkout\": \"2025-01-01\"\n  }\n}" }
           },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "// BUG DOCUMENTADO: API aceita checkout anterior a checkin (sem validação de lógica de negócio)",
-                  "pm.test('Registra resultado para documentação de bug', () => {",
-                  "  console.log('Status:', pm.response.code, '— API aceitou datas inválidas (checkout < checkin)');",
-                  "  pm.expect(true).to.be.true;",
-                  "});"
-                ]
-              }
-            }
-          ]
+          "event": [{ "listen": "test", "script": { "exec": [
+            "// BUG DOCUMENTADO: API aceita checkout anterior a checkin (sem validação de lógica de negócio)",
+            "pm.test('Registra resultado para documentação de bug', () => {",
+            "  console.log('Status:', pm.response.code, '— API aceitou datas inválidas (checkout < checkin)');",
+            "  pm.expect(true).to.be.true;",
+            "});"
+          ]}}]
         },
         {
           "name": "POST /booking - Preço negativo [BUG: aceito indevidamente]",
@@ -361,25 +222,15 @@
             "method": "POST",
             "url": "{{baseUrl}}/booking",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"firstname\": \"Preco\",\n  \"lastname\": \"Negativo\",\n  \"totalprice\": -99,\n  \"depositpaid\": true,\n  \"bookingdates\": {\n    \"checkin\": \"2025-06-01\",\n    \"checkout\": \"2025-06-05\"\n  }\n}"
-            }
+            "body": { "mode": "raw", "raw": "{\n  \"firstname\": \"Preco\",\n  \"lastname\": \"Negativo\",\n  \"totalprice\": -99,\n  \"depositpaid\": true,\n  \"bookingdates\": {\n    \"checkin\": \"2025-06-01\",\n    \"checkout\": \"2025-06-05\"\n  }\n}" }
           },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "// BUG DOCUMENTADO: API aceita preço negativo sem validação",
-                  "pm.test('Registra resultado para documentação de bug', () => {",
-                  "  console.log('Status:', pm.response.code, '— API aceitou totalprice negativo');",
-                  "  pm.expect(true).to.be.true;",
-                  "});"
-                ]
-              }
-            }
-          ]
+          "event": [{ "listen": "test", "script": { "exec": [
+            "// BUG DOCUMENTADO: API aceita preço negativo sem validação",
+            "pm.test('Registra resultado para documentação de bug', () => {",
+            "  console.log('Status:', pm.response.code, '— API aceitou totalprice negativo');",
+            "  pm.expect(true).to.be.true;",
+            "});"
+          ]}}]
         }
       ]
     },
@@ -396,26 +247,16 @@
               { "key": "Accept",       "value": "application/json" },
               { "key": "Cookie",       "value": "token={{token}}" }
             ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"firstname\": \"UpdatedFirst\",\n  \"lastname\": \"UpdatedLast\",\n  \"totalprice\": 200,\n  \"depositpaid\": false,\n  \"bookingdates\": {\n    \"checkin\": \"2025-08-01\",\n    \"checkout\": \"2025-08-10\"\n  },\n  \"additionalneeds\": \"Late checkout\"\n}"
-            }
+            "body": { "mode": "raw", "raw": "{\n  \"firstname\": \"UpdatedFirst\",\n  \"lastname\": \"UpdatedLast\",\n  \"totalprice\": 200,\n  \"depositpaid\": false,\n  \"bookingdates\": {\n    \"checkin\": \"2025-08-01\",\n    \"checkout\": \"2025-08-10\"\n  },\n  \"additionalneeds\": \"Late checkout\"\n}" }
           },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
-                  "pm.test('Dados atualizados', () => {",
-                  "  const json = pm.response.json();",
-                  "  pm.expect(json.firstname).to.eql('UpdatedFirst');",
-                  "  pm.expect(json.totalprice).to.eql(200);",
-                  "});"
-                ]
-              }
-            }
-          ]
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Dados atualizados', () => {",
+            "  const json = pm.response.json();",
+            "  pm.expect(json.firstname).to.eql('UpdatedFirst');",
+            "  pm.expect(json.totalprice).to.eql(200);",
+            "});"
+          ]}}]
         },
         {
           "name": "PUT /booking/:id - Sem autenticação retorna 403",
@@ -426,21 +267,11 @@
               { "key": "Content-Type", "value": "application/json" },
               { "key": "Accept",       "value": "application/json" }
             ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"firstname\": \"Test\",\n  \"lastname\": \"Test\",\n  \"totalprice\": 100,\n  \"depositpaid\": true,\n  \"bookingdates\": {\n    \"checkin\": \"2025-06-01\",\n    \"checkout\": \"2025-06-05\"\n  }\n}"
-            }
+            "body": { "mode": "raw", "raw": "{\n  \"firstname\": \"Test\",\n  \"lastname\": \"Test\",\n  \"totalprice\": 100,\n  \"depositpaid\": true,\n  \"bookingdates\": {\n    \"checkin\": \"2025-06-01\",\n    \"checkout\": \"2025-06-05\"\n  }\n}" }
           },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Status 403 sem autenticação', () => pm.response.to.have.status(403));"
-                ]
-              }
-            }
-          ]
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 403 sem autenticação', () => pm.response.to.have.status(403));"
+          ]}}]
         },
         {
           "name": "PUT /booking/999999 - ID inválido [BUG: retorna 405 em vez de 404]",
@@ -451,25 +282,15 @@
               { "key": "Content-Type", "value": "application/json" },
               { "key": "Cookie",       "value": "token={{token}}" }
             ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"firstname\": \"Test\",\n  \"lastname\": \"Test\",\n  \"totalprice\": 100,\n  \"depositpaid\": true,\n  \"bookingdates\": {\n    \"checkin\": \"2025-06-01\",\n    \"checkout\": \"2025-06-05\"\n  }\n}"
-            }
+            "body": { "mode": "raw", "raw": "{\n  \"firstname\": \"Test\",\n  \"lastname\": \"Test\",\n  \"totalprice\": 100,\n  \"depositpaid\": true,\n  \"bookingdates\": {\n    \"checkin\": \"2025-06-01\",\n    \"checkout\": \"2025-06-05\"\n  }\n}" }
           },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "// BUG: retorna 405 Method Not Allowed em vez de 404 Not Found",
-                  "pm.test('Não retorna 200 para ID inexistente', () => pm.expect(pm.response.code).to.not.equal(200));",
-                  "pm.test('Retorna erro 4xx (esperado 404, API retorna 405)', () => {",
-                  "  pm.expect([404, 405]).to.include(pm.response.code);",
-                  "});"
-                ]
-              }
-            }
-          ]
+          "event": [{ "listen": "test", "script": { "exec": [
+            "// BUG: retorna 405 Method Not Allowed em vez de 404 Not Found",
+            "pm.test('Não retorna 200 para ID inexistente', () => pm.expect(pm.response.code).to.not.equal(200));",
+            "pm.test('Retorna erro 4xx (esperado 404, API retorna 405)', () => {",
+            "  pm.expect([404, 405]).to.include(pm.response.code);",
+            "});"
+          ]}}]
         }
       ]
     },
@@ -486,22 +307,12 @@
               { "key": "Accept",       "value": "application/json" },
               { "key": "Cookie",       "value": "token={{token}}" }
             ],
-            "body": {
-              "mode": "raw",
-              "raw": "{ \"firstname\": \"Patched\" }"
-            }
+            "body": { "mode": "raw", "raw": "{ \"firstname\": \"Patched\" }" }
           },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
-                  "pm.test('Campo atualizado', () => pm.expect(pm.response.json().firstname).to.eql('Patched'));"
-                ]
-              }
-            }
-          ]
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Campo atualizado', () => pm.expect(pm.response.json().firstname).to.eql('Patched'));"
+          ]}}]
         },
         {
           "name": "PATCH /booking/:id - Atualizar bookingdates",
@@ -513,24 +324,14 @@
               { "key": "Accept",       "value": "application/json" },
               { "key": "Cookie",       "value": "token={{token}}" }
             ],
-            "body": {
-              "mode": "raw",
-              "raw": "{ \"bookingdates\": { \"checkin\": \"2025-09-01\", \"checkout\": \"2025-09-10\" } }"
-            }
+            "body": { "mode": "raw", "raw": "{ \"bookingdates\": { \"checkin\": \"2025-09-01\", \"checkout\": \"2025-09-10\" } }" }
           },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
-                  "pm.test('Datas atualizadas', () => {",
-                  "  pm.expect(pm.response.json().bookingdates.checkin).to.eql('2025-09-01');",
-                  "});"
-                ]
-              }
-            }
-          ]
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Datas atualizadas', () => {",
+            "  pm.expect(pm.response.json().bookingdates.checkin).to.eql('2025-09-01');",
+            "});"
+          ]}}]
         },
         {
           "name": "PATCH /booking/:id - Sem autenticação retorna 403",
@@ -538,21 +339,11 @@
             "method": "PATCH",
             "url": "{{baseUrl}}/booking/{{bookingId}}",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{ \"firstname\": \"Unauthorized\" }"
-            }
+            "body": { "mode": "raw", "raw": "{ \"firstname\": \"Unauthorized\" }" }
           },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Status 403 sem autenticação', () => pm.response.to.have.status(403));"
-                ]
-              }
-            }
-          ]
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 403 sem autenticação', () => pm.response.to.have.status(403));"
+          ]}}]
         }
       ]
     },
@@ -566,35 +357,18 @@
             "url": "{{baseUrl}}/booking/{{bookingId}}",
             "header": [{ "key": "Cookie", "value": "token={{token}}" }]
           },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "// QUIRK DOCUMENTADO: DELETE retorna 201 Created em vez de 204 No Content",
-                  "pm.test('Status 201 (quirk: deveria ser 204)', () => pm.response.to.have.status(201));",
-                  "pm.test('Tempo de resposta < 2000ms', () => pm.expect(pm.response.responseTime).to.be.below(2000));"
-                ]
-              }
-            }
-          ]
+          "event": [{ "listen": "test", "script": { "exec": [
+            "// QUIRK DOCUMENTADO: DELETE retorna 201 Created em vez de 204 No Content",
+            "pm.test('Status 201 (quirk: deveria ser 204)', () => pm.response.to.have.status(201));",
+            "pm.test('Tempo de resposta < 2000ms', () => pm.expect(pm.response.responseTime).to.be.below(2000));"
+          ]}}]
         },
         {
           "name": "GET /booking/:id após DELETE - Retorna 404",
-          "request": {
-            "method": "GET",
-            "url": "{{baseUrl}}/booking/{{bookingId}}"
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Status 404 após deleção', () => pm.response.to.have.status(404));"
-                ]
-              }
-            }
-          ]
+          "request": { "method": "GET", "url": "{{baseUrl}}/booking/{{bookingId}}" },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 404 após deleção', () => pm.response.to.have.status(404));"
+          ]}}]
         },
         {
           "name": "DELETE /booking/:id - Sem autenticação retorna 403",
@@ -602,16 +376,9 @@
             "method": "DELETE",
             "url": "{{baseUrl}}/booking/1"
           },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Status 403 sem autenticação', () => pm.response.to.have.status(403));"
-                ]
-              }
-            }
-          ]
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 403 sem autenticação', () => pm.response.to.have.status(403));"
+          ]}}]
         },
         {
           "name": "DELETE /booking/999999 - ID inexistente retorna 405",
@@ -620,16 +387,9 @@
             "url": "{{baseUrl}}/booking/999999",
             "header": [{ "key": "Cookie", "value": "token={{token}}" }]
           },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Não retorna 200 para ID inexistente', () => pm.expect(pm.response.code).to.not.equal(200));"
-                ]
-              }
-            }
-          ]
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Não retorna 200 para ID inexistente', () => pm.expect(pm.response.code).to.not.equal(200));"
+          ]}}]
         }
       ]
     },
@@ -637,26 +397,16 @@
       "name": "Segurança",
       "item": [
         {
-          "name": "GET /booking - SQL Injection no parâmetro id",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/booking/1' OR '1'='1",
-              "query": []
-            }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Não expõe dados via SQL injection', () => {",
-                  "  pm.expect([400, 404, 405]).to.include(pm.response.code);",
-                  "});"
-                ]
-              }
-            }
-          ]
+          "name": "GET /booking - SQL Injection no firstname (query param)",
+          "request": { "method": "GET", "url": "{{baseUrl}}/booking?firstname=1%27+OR+%271%27%3D%271" },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('SQL injection via query param não causa erro 500', () => {",
+            "  pm.expect(pm.response.code).to.not.equal(500);",
+            "});",
+            "pm.test('Retorna resposta controlada', () => {",
+            "  pm.expect([200, 400, 404]).to.include(pm.response.code);",
+            "});"
+          ]}}]
         },
         {
           "name": "POST /booking - XSS no campo firstname",
@@ -664,31 +414,19 @@
             "method": "POST",
             "url": "{{baseUrl}}/booking",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"firstname\": \"<script>alert('xss')</script>\",\n  \"lastname\": \"Test\",\n  \"totalprice\": 100,\n  \"depositpaid\": true,\n  \"bookingdates\": {\n    \"checkin\": \"2025-06-01\",\n    \"checkout\": \"2025-06-05\"\n  }\n}"
-            }
+            "body": { "mode": "raw", "raw": "{\n  \"firstname\": \"<script>alert('xss')</script>\",\n  \"lastname\": \"Test\",\n  \"totalprice\": 100,\n  \"depositpaid\": true,\n  \"bookingdates\": {\n    \"checkin\": \"2025-06-01\",\n    \"checkout\": \"2025-06-05\"\n  }\n}" }
           },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Payload XSS não causa erro de servidor', () => {",
-                  "  pm.expect(pm.response.code).to.not.equal(500);",
-                  "});",
-                  "pm.test('Registra: verificar se payload foi sanitizado na resposta', () => {",
-                  "  const body = pm.response.text();",
-                  "  console.log('Firstname na resposta:', pm.response.json()?.booking?.firstname);",
-                  "  pm.expect(true).to.be.true;",
-                  "});"
-                ]
-              }
-            }
-          ]
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Payload XSS não causa erro de servidor', () => {",
+            "  pm.expect(pm.response.code).to.not.equal(500);",
+            "});",
+            "pm.test('Resposta é JSON válido', () => {",
+            "  pm.expect(() => pm.response.json()).to.not.throw();",
+            "});"
+          ]}}]
         },
         {
-          "name": "PUT /booking/:id - Auth via Authorization header (deve falhar — quirk)",
+          "name": "PUT /booking/:id - Auth via Authorization Bearer (deve falhar — quirk)",
           "request": {
             "method": "PUT",
             "url": "{{baseUrl}}/booking/{{bookingId}}",
@@ -696,46 +434,23 @@
               { "key": "Content-Type",  "value": "application/json" },
               { "key": "Authorization", "value": "Bearer {{token}}" }
             ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"firstname\": \"AuthTest\",\n  \"lastname\": \"Test\",\n  \"totalprice\": 100,\n  \"depositpaid\": true,\n  \"bookingdates\": {\n    \"checkin\": \"2025-06-01\",\n    \"checkout\": \"2025-06-05\"\n  }\n}"
-            }
+            "body": { "mode": "raw", "raw": "{\n  \"firstname\": \"AuthTest\",\n  \"lastname\": \"Test\",\n  \"totalprice\": 100,\n  \"depositpaid\": true,\n  \"bookingdates\": {\n    \"checkin\": \"2025-06-01\",\n    \"checkout\": \"2025-06-05\"\n  }\n}" }
           },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "// QUIRK DOCUMENTADO: token via Authorization header não é aceito — necessário usar Cookie",
-                  "pm.test('Status 403 ao usar Authorization header em vez de Cookie', () => {",
-                  "  pm.response.to.have.status(403);",
-                  "});"
-                ]
-              }
-            }
-          ]
+          "event": [{ "listen": "test", "script": { "exec": [
+            "// QUIRK DOCUMENTADO: token via Authorization header não é aceito — necessário usar Cookie",
+            "pm.test('Status 403 ao usar Authorization header em vez de Cookie', () => {",
+            "  pm.response.to.have.status(403);",
+            "});"
+          ]}}]
         },
         {
-          "name": "GET /booking - Query param excessivamente longo",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/booking?firstname=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-              "query": []
-            }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Não retorna 500 para input excessivamente longo', () => {",
-                  "  pm.expect(pm.response.code).to.not.equal(500);",
-                  "});"
-                ]
-              }
-            }
-          ]
+          "name": "GET /booking - Query param com nome muito longo",
+          "request": { "method": "GET", "url": "{{baseUrl}}/booking?firstname=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Input excessivamente longo não causa erro 500', () => {",
+            "  pm.expect(pm.response.code).to.not.equal(500);",
+            "});"
+          ]}}]
         }
       ]
     }

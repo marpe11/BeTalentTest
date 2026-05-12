@@ -10,7 +10,8 @@ test.describe('Navegação', () => {
     await sidebar.open();
     await expect(page.locator('#inventory_sidebar_link')).toBeVisible();
     await sidebar.close();
-    await expect(page.locator('#inventory_sidebar_link')).toBeHidden();
+    // aria-hidden="true" é o sinal de fechamento do react-burger-menu (funciona em Chromium e Firefox)
+    await expect(page.locator('.bm-menu-wrap')).toHaveAttribute('aria-hidden', 'true');
   });
 
   test('link All Items navega para o inventário', async ({ authenticatedPage: page }) => {

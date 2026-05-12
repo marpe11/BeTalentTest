@@ -23,8 +23,14 @@ export class SidebarComponent {
   }
 
   async close() {
-    await this.closeButton.click();
-    await this.allItemsLink.waitFor({ state: 'hidden' });
+    // JS click bypassa diferenças de timing de animação CSS entre Chromium e Firefox
+    await this.page.evaluate(() => {
+      (document.getElementById('react-burger-cross-btn') as HTMLElement)?.click();
+    });
+    // Aguarda aria-hidden="true" no wrapper — sinal confiável de fechamento
+    await this.page.waitForFunction(() =>
+      document.querySelector('.bm-menu-wrap')?.getAttribute('aria-hidden') === 'true'
+    );
   }
 
   async logout() {

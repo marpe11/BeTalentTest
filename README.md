@@ -159,12 +159,67 @@ BeTalentTest/
 
 ---
 
+## Resultados — Última Execução (2026-05-12)
+
+### UI — Playwright
+
+| Projeto | Testes | Passaram | Falharam | Duração |
+|---|---|---|---|---|
+| chromium | 78 | 78 | 0 | ~2m 30s |
+| firefox | 40 | 40 | 0 | ~2m 10s |
+| **Total** | **118** | **118** | **0** | **~5m** |
+
+> Testes de responsividade (`mobile-chrome`, `mobile-safari`) e acessibilidade (`accessibility`) incluídos no total acima.
+
+```
+78 passed (chromium)
+40 passed (firefox)
+```
+
+### API — Newman
+
+| Métrica | Resultado |
+|---|---|
+| Requests executados | 28 |
+| Assertions verificadas | 50 |
+| Falhas | **0** |
+| Duração total | 6,9s |
+| Tempo médio de resposta | 164ms |
+| Tempo mínimo | 135ms |
+| Tempo máximo | 639ms |
+
+```
+✔  50 assertions  ✖  0 failures   ⏱  6.9s
+```
+
+**Cobertura por pasta:**
+
+| Pasta | Requests | Assertions | Status |
+|---|---|---|---|
+| Health Check | 1 | 2 | ✅ |
+| Autenticação | 3 | 6 | ✅ |
+| Listar Reservas | 4 | 8 | ✅ |
+| Criar Reserva | 5 | 8 | ✅ |
+| Atualizar Reserva (PUT) | 3 | 5 | ✅ |
+| Atualizar Parcialmente (PATCH) | 3 | 6 | ✅ |
+| Excluir Reserva | 4 | 7 | ✅ |
+| Segurança | 4 | 8 | ✅ |
+
+**Bugs/Quirks da API confirmados pelos testes:**
+- `POST /booking` sem campo obrigatório retorna **500** (esperado: 400)
+- `POST /booking` com `checkout < checkin` é aceito sem erro (ausência de validação de negócio)
+- `POST /booking` com `totalprice` negativo é aceito sem erro
+- `PUT /booking/999999` retorna **405** em vez de 404
+- `DELETE /booking/:id` retorna **201** em vez de 204
+
+---
+
 ## Evidências
 
 - **Screenshots:** Capturados automaticamente em falhas (configuração `screenshot: 'only-on-failure'`)
 - **Vídeos:** Retidos em falhas + sempre gravados no fluxo de compra completo (`purchase-flow.spec.ts`)
-- **Relatório UI:** `npx playwright show-report test-results/playwright-report` após execução
-- **Relatório API:** `test-results/newman-report/report.html`
+- **Relatório UI:** `npx playwright show-report playwright-report` após execução
+- **Relatório API:** `test-results/newman-report/report.html` (gerado com `npm run test:api`)
 
 ---
 

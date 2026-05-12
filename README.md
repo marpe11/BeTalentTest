@@ -1,8 +1,12 @@
 # BeTalentTest — QA Challenge
 
-Repositório de testes para o desafio técnico de QA da BeTalent, cobrindo:
-- **UI Testing:** Sauce Demo (https://www.saucedemo.com) — Playwright + TypeScript
-- **API Testing:** Restful-Booker (https://restful-booker.herokuapp.com) — Postman + Newman + k6
+Repositório de testes para o desafio técnico de QA da BeTalent.
+
+| Frente | Aplicação | Stack |
+|---|---|---|
+| UI Testing | [Sauce Demo](https://www.saucedemo.com) | Playwright + TypeScript |
+| API Testing | [Restful-Booker](https://restful-booker.herokuapp.com) | Postman + Newman + k6 |
+| Relatórios | UI + API unificados | Allure Report |
 
 ---
 
@@ -11,6 +15,7 @@ Repositório de testes para o desafio técnico de QA da BeTalent, cobrindo:
 | Ferramenta | Versão mínima | Instalação |
 |---|---|---|
 | Node.js | 18+ | https://nodejs.org |
+| Java | 8+ | https://adoptium.net *(necessário para Allure)* |
 | k6 | Qualquer | https://grafana.com/docs/k6/latest/set-up/install-k6/ |
 | Git | Qualquer | https://git-scm.com |
 
@@ -23,11 +28,67 @@ Repositório de testes para o desafio técnico de QA da BeTalent, cobrindo:
 git clone https://github.com/marpe11/BeTalentTest.git
 cd BeTalentTest
 
-# 2. Instalar dependências Node
+# 2. Instalar dependências Node (Playwright, Newman, Allure, axe-core…)
 npm install
 
 # 3. Instalar browsers do Playwright
 npx playwright install chromium firefox
+```
+
+---
+
+## Estrutura do Projeto
+
+```
+BeTalentTest/
+├── playwright.config.ts          # Configuração multi-browser do Playwright
+├── package.json                  # Dependências e scripts npm
+├── tsconfig.json                 # Configuração TypeScript
+│
+├── ui/
+│   ├── docs/
+│   │   ├── test-plan.md          # Plano de testes UI
+│   │   ├── test-cases.md         # Casos de teste documentados (40+)
+│   │   ├── bug-analysis.md       # Bugs encontrados com severidade
+│   │   ├── improvements.md       # Sugestões de melhoria da aplicação
+│   │   └── risk-analysis.md      # Matriz de riscos
+│   └── tests/
+│       ├── data/
+│       │   └── users.ts          # Credenciais dos 6 tipos de usuário
+│       ├── fixtures/
+│       │   └── auth.fixture.ts   # Fixture de login reutilizável entre specs
+│       ├── helpers/
+│       │   └── axe-helper.ts     # Wrapper axe-core para scans WCAG 2.1 AA
+│       ├── pages/                # Page Object Model — 8 classes
+│       │   ├── LoginPage.ts
+│       │   ├── InventoryPage.ts
+│       │   ├── ProductDetailPage.ts
+│       │   ├── CartPage.ts
+│       │   ├── CheckoutStepOnePage.ts
+│       │   ├── CheckoutStepTwoPage.ts
+│       │   ├── CheckoutCompletePage.ts
+│       │   └── SidebarComponent.ts
+│       └── specs/                # 8 arquivos de spec — 118 testes
+│           ├── login.spec.ts          # 12 casos — todos os tipos de usuário
+│           ├── logout.spec.ts         # 4 casos — sessão e redirecionamento
+│           ├── inventory.spec.ts      # 13 casos — produtos, ordenação, carrinho
+│           ├── cart.spec.ts           # 9 casos — itens, badge, navegação
+│           ├── purchase-flow.spec.ts  # 11 casos — fluxo E2E (vídeo sempre gravado)
+│           ├── navigation.spec.ts     # 10 casos — sidebar, links, acesso não autenticado
+│           ├── responsiveness.spec.ts # 10 casos — Pixel 5 + iPhone 13
+│           └── accessibility.spec.ts # 10 casos — WCAG 2.1 AA via axe-core
+│
+└── api/
+    ├── docs/
+    │   ├── test-scenarios.md     # 31 cenários de API documentados
+    │   └── bug-analysis.md       # Bugs e quirks conhecidos da API
+    ├── postman/
+    │   ├── BeTalent_Booker.postman_collection.json   # 28 requests, 8 pastas
+    │   └── BeTalent_Booker.postman_environment.json  # Variáveis de ambiente
+    └── performance/
+        ├── k6-smoke.js           # 1 VU, 1 min — verificação básica
+        ├── k6-load.js            # ramp 10→50 VUs, 7 min — carga realista
+        └── k6-stress.js          # ramp 50→200 VUs, 10 min — encontrar limite
 ```
 
 ---
@@ -40,10 +101,13 @@ npx playwright install chromium firefox
 # Todos os testes (chromium + firefox + mobile + acessibilidade)
 npm run test:ui
 
-# Apenas um arquivo específico
+# Por spec
 npm run test:ui:login
+npm run test:ui:logout
+npm run test:ui:inventory
 npm run test:ui:cart
 npm run test:ui:purchase
+npm run test:ui:navigation
 npm run test:ui:mobile
 npm run test:ui:a11y
 
@@ -52,58 +116,87 @@ npm run test:ui:headed
 
 # Modo debug (pausa no primeiro erro)
 npm run test:ui:debug
-
-# Ver relatório HTML após execução
-npm run report
 ```
+
+**Projetos configurados no Playwright:**
+
+| Projeto | Device | Specs |
+|---|---|---|
+| chromium | Desktop Chrome | Todas exceto responsiveness e accessibility |
+| firefox | Desktop Firefox | Todas exceto responsiveness e accessibility |
+| mobile-chrome | Pixel 5 | responsiveness.spec.ts |
+| mobile-safari | iPhone 13 | responsiveness.spec.ts |
+| accessibility | Desktop Chrome | accessibility.spec.ts |
 
 ### API — Newman (Postman)
 
 ```bash
-# Executar toda a collection e gerar relatório HTML
+# Executa a collection completa e gera relatórios (htmlextra + Allure)
 npm run test:api
 
-# Relatório gerado em: test-results/newman-report/report.html
+# Relatório htmlextra gerado em: test-results/newman-report/report.html
 ```
 
-> **Nota:** A Restful-Booker reseta a cada ~10 minutos. Se algum teste falhar por ID não encontrado, re-execute.
+> **Nota:** A Restful-Booker reseta a cada ~10 minutos. Se um teste falhar por ID não encontrado, re-execute.
+
+**Pastas da collection:**
+
+| Pasta | Requests | Descrição |
+|---|---|---|
+| Health Check | 1 | GET /ping |
+| Autenticação | 3 | POST /auth — válido, inválido, campos ausentes |
+| Listar Reservas | 4 | GET /booking — lista, filtros, ID específico, inexistente |
+| Criar Reserva | 5 | POST /booking — campos completos, opcional, validações, bugs |
+| Atualizar (PUT) | 3 | PUT /booking/:id — autenticado, sem auth, ID inválido |
+| Atualizar Parcialmente (PATCH) | 3 | PATCH /booking/:id — campo único, datas, sem auth |
+| Excluir Reserva | 4 | DELETE — autenticado, sem auth, ID inválido, verificação pós-delete |
+| Segurança | 4 | SQL injection, XSS, header incorreto, input excessivo |
 
 ### Performance — k6
 
 ```bash
-# Smoke test (1 VU, 1 min — verificação básica)
+# Smoke test (1 VU, 1 min — sanidade rápida)
 npm run test:perf:smoke
 
-# Load test (até 50 VUs, 7 min — carga realista)
+# Load test (ramp 10→50 VUs, 7 min — carga realista)
 npm run test:perf:load
 
-# Stress test (até 200 VUs, 10 min — encontrar limite)
+# Stress test (ramp 50→200 VUs, 10 min — encontrar ponto de ruptura)
 npm run test:perf:stress
 
 # Salvar resultado em JSON
 k6 run api/performance/k6-load.js --out json=test-results/k6-results/load.json
 ```
 
-### Allure Report (UI + API unificados)
+**Thresholds por script:**
+
+| Script | VUs | Duração | p95 | p99 | Erros |
+|---|---|---|---|---|---|
+| k6-smoke.js | 1 | 1 min | < 2s | — | < 1% |
+| k6-load.js | 10→50 | 7 min | < 3s | < 5s | < 5% |
+| k6-stress.js | 50→200 | 10 min | observação | — | — |
+
+### Allure Report — Dashboard Unificado UI + API
 
 > **Pré-requisito:** Java 8+ instalado. Verifique com `java -version`.
 
 ```bash
-# Executar UI + API e abrir relatório Allure em um comando
+# Rodar tudo e abrir relatório Allure em um único comando
 npm run test:all:allure
 
-# Ou passo a passo:
-npm run test:ui          # gera allure-results/ (Playwright)
-npm run test:api         # adiciona resultados de API em allure-results/
-npm run allure:generate  # compila o relatório → allure-report/
+# Ou passo a passo
+npm run test:ui          # gera allure-results/ com resultados Playwright
+npm run test:api         # adiciona resultados da API em allure-results/
+npm run allure:generate  # compila → allure-report/
 npm run allure:open      # abre no browser
 ```
 
-O relatório Allure consolida resultados de Playwright e Newman em um único dashboard com:
-- Visão geral (passed/failed/broken/skipped)
-- Histórico de execuções e gráficos de tendência
-- Categorias de falha automáticas
-- Screenshots e vídeos embutidos por teste
+O Allure consolida Playwright + Newman em um único dashboard com:
+- Visão geral de execução (passed / failed / broken / skipped)
+- Histórico de execuções e gráfico de tendência entre runs
+- Categorias de falha automáticas (produto vs. ambiente)
+- Screenshots e vídeos embutidos clicáveis por teste
+- Informações de ambiente (browser, baseURL, framework)
 
 ### Suite Completa (sem Allure)
 
@@ -113,48 +206,13 @@ npm run test:all
 
 ---
 
-## Estrutura do Projeto
+## Relatórios Disponíveis
 
-```
-BeTalentTest/
-├── playwright.config.ts          # Configuração do Playwright
-├── package.json                  # Dependências e scripts
-├── tsconfig.json                 # Configuração TypeScript
-│
-├── ui/
-│   ├── docs/
-│   │   ├── test-plan.md          # Plano de testes
-│   │   ├── test-cases.md         # Casos de teste manuais
-│   │   ├── bug-analysis.md       # Bugs encontrados
-│   │   ├── improvements.md       # Sugestões de melhoria
-│   │   └── risk-analysis.md      # Matriz de riscos
-│   └── tests/
-│       ├── data/users.ts         # Credenciais dos usuários
-│       ├── fixtures/             # Auth fixture (login reutilizável)
-│       ├── helpers/              # axe-core wrapper
-│       ├── pages/                # Page Object Model (8 classes)
-│       └── specs/                # 8 arquivos de spec
-│           ├── login.spec.ts
-│           ├── logout.spec.ts
-│           ├── inventory.spec.ts
-│           ├── cart.spec.ts
-│           ├── purchase-flow.spec.ts
-│           ├── navigation.spec.ts
-│           ├── responsiveness.spec.ts  # mobile-chrome, mobile-safari
-│           └── accessibility.spec.ts  # WCAG 2.1 AA via axe-core
-│
-└── api/
-    ├── docs/
-    │   ├── test-scenarios.md     # Todos os cenários de API
-    │   └── bug-analysis.md       # Bugs e quirks da API
-    ├── postman/
-    │   ├── BeTalent_Booker.postman_collection.json
-    │   └── BeTalent_Booker.postman_environment.json
-    └── performance/
-        ├── k6-smoke.js           # 1 VU, 1 min
-        ├── k6-load.js            # ramp 10→50 VUs, 7 min
-        └── k6-stress.js          # ramp 50→200 VUs, 10 min
-```
+| Relatório | Comando | Saída | Cobertura |
+|---|---|---|---|
+| **Allure** (unificado) | `npm run test:all:allure` | `allure-report/index.html` | UI + API |
+| **Playwright HTML** | `npm run report` | `playwright-report/index.html` | UI |
+| **Newman htmlextra** | `npm run test:api` | `test-results/newman-report/report.html` | API |
 
 ---
 
@@ -163,21 +221,52 @@ BeTalentTest/
 | Ferramenta | Uso | Justificativa |
 |---|---|---|
 | **Playwright** | Automação UI | Cross-browser nativo, suporte mobile, TypeScript, screenshot/vídeo built-in |
-| **TypeScript** | Linguagem | Type safety reduz erros; ótima DX com Playwright |
+| **TypeScript** | Linguagem | Type safety reduz erros em page objects e fixtures |
 | **axe-core** | Acessibilidade | Biblioteca mais completa para WCAG; integração nativa com Playwright |
-| **Postman** | Collection API | Formato padrão da indústria; suporte a scripts de teste |
-| **Newman** | Runner CLI | Executa collections Postman via linha de comando; reporter HTML |
-| **k6** | Performance | Scripting em JS, relatórios detalhados, thresholds automatizados |
-| **Allure Report** | Relatórios | Dashboard unificado UI + API com histórico, tendências e screenshots embutidos |
+| **Postman** | Collection API | Formato padrão de mercado; suporte a scripts de teste por request |
+| **Newman** | Runner CLI | Executa collections Postman no terminal; reporters htmlextra e Allure |
+| **k6** | Performance | Scripting em JS, thresholds automatizados, relatórios detalhados |
+| **Allure Report** | Relatórios | Dashboard unificado UI + API com histórico, tendências e evidências embutidas |
 
 ---
 
-## Premissas
+## Usuários do Sauce Demo
 
-- A aplicação Sauce Demo é uma plataforma de demonstração com **bugs intencionais** para fins de teste. Os bugs de `problem_user`, `locked_out_user` e `performance_glitch_user` são comportamentos esperados da plataforma e estão documentados em `ui/docs/bug-analysis.md`.
-- A Restful-Booker é uma API pública de testes que **reseta a cada ~10 minutos**. Testes de API foram estruturados para criar e limpar seus próprios dados.
-- A autenticação na Restful-Booker requer o token no header `Cookie: token=<value>` — não em `Authorization: Bearer`.
-- Testes de acessibilidade baseiam-se no WCAG 2.1 nível AA. Violações encontradas estão registradas nos resultados do axe-core.
+Todos os usuários usam a senha `secret_sauce`.
+
+| Usuário | Comportamento |
+|---|---|
+| `standard_user` | Fluxo normal — referência para todos os testes |
+| `locked_out_user` | Bloqueado no login — erro documentado |
+| `problem_user` | Imagens erradas; campo `Last Name` não editável no checkout |
+| `performance_glitch_user` | Login com atraso de ~5s (timeout configurado: 60s) |
+| `error_user` | Erros em ações diversas |
+| `visual_user` | Inconsistências visuais na interface |
+
+---
+
+## Bugs Confirmados
+
+### UI — Sauce Demo
+
+| # | Usuário | Descrição | Severidade |
+|---|---|---|---|
+| UI-01 | `locked_out_user` | Login bloqueado sem possibilidade de recuperação | Alta |
+| UI-02 | `problem_user` | Imagens dos produtos são exibidas incorretamente | Média |
+| UI-03 | `problem_user` | Campo `Last Name` no checkout não aceita digitação | Crítica |
+| UI-04 | `performance_glitch_user` | Login leva ~5s — degradação perceptível de UX | Média |
+| UI-05 | `visual_user` | Inconsistências visuais em botões e layout | Baixa |
+
+### API — Restful-Booker
+
+| # | Endpoint | Comportamento Observado | Esperado |
+|---|---|---|---|
+| API-01 | `POST /booking` sem campo obrigatório | Retorna **500** | 400 Bad Request |
+| API-02 | `POST /booking` com `checkout < checkin` | Aceita sem erro | 422 Unprocessable Entity |
+| API-03 | `POST /booking` com `totalprice` negativo | Aceita sem erro | 400 Bad Request |
+| API-04 | `PUT /booking/999999` (ID inexistente) | Retorna **405** | 404 Not Found |
+| API-05 | `DELETE /booking/:id` autenticado | Retorna **201** | 204 No Content |
+| API-06 | Auth via `Authorization: Bearer` | Retorna 403 | Quirk documentado — usar `Cookie: token=<value>` |
 
 ---
 
@@ -185,18 +274,11 @@ BeTalentTest/
 
 ### UI — Playwright
 
-| Projeto | Testes | Passaram | Falharam | Duração |
-|---|---|---|---|---|
-| chromium | 78 | 78 | 0 | ~2m 30s |
-| firefox | 40 | 40 | 0 | ~2m 10s |
-| **Total** | **118** | **118** | **0** | **~5m** |
-
-> Testes de responsividade (`mobile-chrome`, `mobile-safari`) e acessibilidade (`accessibility`) incluídos no total acima.
-
-```
-78 passed (chromium)
-40 passed (firefox)
-```
+| Projeto | Testes | Passaram | Falharam |
+|---|---|---|---|
+| chromium | 78 | 78 | 0 |
+| firefox | 40 | 40 | 0 |
+| **Total** | **118** | **118** | **0** |
 
 ### API — Newman
 
@@ -207,62 +289,38 @@ BeTalentTest/
 | Falhas | **0** |
 | Duração total | 6,9s |
 | Tempo médio de resposta | 164ms |
-| Tempo mínimo | 135ms |
-| Tempo máximo | 639ms |
-
-```
-✔  50 assertions  ✖  0 failures   ⏱  6.9s
-```
-
-**Cobertura por pasta:**
-
-| Pasta | Requests | Assertions | Status |
-|---|---|---|---|
-| Health Check | 1 | 2 | ✅ |
-| Autenticação | 3 | 6 | ✅ |
-| Listar Reservas | 4 | 8 | ✅ |
-| Criar Reserva | 5 | 8 | ✅ |
-| Atualizar Reserva (PUT) | 3 | 5 | ✅ |
-| Atualizar Parcialmente (PATCH) | 3 | 6 | ✅ |
-| Excluir Reserva | 4 | 7 | ✅ |
-| Segurança | 4 | 8 | ✅ |
-
-**Bugs/Quirks da API confirmados pelos testes:**
-- `POST /booking` sem campo obrigatório retorna **500** (esperado: 400)
-- `POST /booking` com `checkout < checkin` é aceito sem erro (ausência de validação de negócio)
-- `POST /booking` com `totalprice` negativo é aceito sem erro
-- `PUT /booking/999999` retorna **405** em vez de 404
-- `DELETE /booking/:id` retorna **201** em vez de 204
+| Min / Max | 135ms / 639ms |
 
 ---
 
-## Evidências
+## Premissas
 
-- **Screenshots:** Capturados automaticamente em falhas (configuração `screenshot: 'only-on-failure'`)
-- **Vídeos:** Retidos em falhas + sempre gravados no fluxo de compra completo (`purchase-flow.spec.ts`)
-- **Relatório Allure (unificado):** `npm run test:all:allure` — abre dashboard com UI + API em um único relatório
-- **Relatório UI (Playwright HTML):** `npm run report` — relatório nativo do Playwright em `playwright-report/`
-- **Relatório API (Newman htmlextra):** `test-results/newman-report/report.html` (gerado com `npm run test:api`)
+- O Sauce Demo possui **bugs intencionais** — comportamentos de `problem_user`, `locked_out_user` e `performance_glitch_user` são documentados, não bloqueantes.
+- A Restful-Booker é API pública de testes que **reseta a cada ~10 minutos**. Os testes criam e limpam seus próprios dados dentro da execução.
+- Autenticação na Restful-Booker requer `Cookie: token=<value>` — não `Authorization: Bearer`.
+- Testes de acessibilidade seguem WCAG 2.1 nível AA via axe-core.
 
 ---
 
 ## Cobertura
 
-### Nível 1 (Obrigatório) — 100% coberto
-- ✅ Login com diferentes tipos de usuário
-- ✅ Ordenação e filtragem de produtos
-- ✅ Fluxo completo de compra
-- ✅ Remoção de itens do carrinho
-- ✅ Navegação entre páginas
-- ✅ Logout
-- ✅ Autenticação básica na API
-- ✅ CRUD de reservas
-- ✅ Validação de campos obrigatórios
+### Nível 1 — Obrigatório
 
-### Nível 2 (Diferencial) — 100% coberto
-- ✅ Testes de responsividade (Pixel 5 + iPhone 13)
-- ✅ Testes de acessibilidade (WCAG 2.1 AA via axe-core)
-- ✅ Testes automatizados UI (Playwright)
-- ✅ Testes de performance (k6: smoke, load, stress)
-- ✅ Testes de segurança (SQL injection, XSS, headers incorretos)
-- ✅ Automação via Newman
+- ✅ Login com todos os tipos de usuário (6 perfis)
+- ✅ Ordenação de produtos (A-Z, Z-A, preço crescente, decrescente)
+- ✅ Fluxo completo de compra (E2E com verificação de math)
+- ✅ Adição e remoção de itens do carrinho
+- ✅ Navegação entre páginas e sidebar
+- ✅ Logout e proteção de rotas autenticadas
+- ✅ Autenticação e CRUD completo na API
+- ✅ Validação de campos obrigatórios e cenários de erro
+
+### Nível 2 — Diferencial
+
+- ✅ Responsividade em dispositivos móveis (Pixel 5 + iPhone 13)
+- ✅ Acessibilidade WCAG 2.1 AA via axe-core (7 páginas escaneadas)
+- ✅ Automação UI multi-browser com Playwright (chromium + firefox)
+- ✅ Testes de performance com k6 (smoke, load e stress)
+- ✅ Segurança básica na API (SQL injection, XSS, auth incorreta)
+- ✅ Relatório unificado UI + API via Allure Report
+- ✅ Documentação completa (plano, casos, bugs, melhorias, riscos)

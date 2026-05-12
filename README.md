@@ -206,6 +206,25 @@ npm run test:all
 
 ---
 
+## Evidências
+
+A pasta [`evidence/`](evidence/) contém capturas geradas durante execução real dos testes (2026-05-12):
+
+**Screenshots (12 imagens):**
+- Fluxo completo de compra — happy path e múltiplos itens
+- Validações de formulário — credenciais inválidas, campos obrigatórios
+- Bugs documentados — `locked_out_user`, `problem_user` (imagens erradas, campo bloqueado)
+- Inventário — exibição dos 6 produtos, ordenações
+
+**Vídeos (3 arquivos .webm):**
+- `01-e2e-purchase-complete-chromium.webm` — fluxo E2E completo
+- `02-bug-problem-user-lastname-chromium.webm` — bug crítico campo Last Name
+- `03-checkout-math-subtotal-tax-chromium.webm` — verificação matemática do pedido
+
+> Ao rodar os testes, o Playwright gera evidências adicionais automaticamente (screenshots em falha, vídeos do purchase-flow). Ver [`evidence/README.md`](evidence/README.md) para detalhes.
+
+---
+
 ## Relatórios Disponíveis
 
 | Relatório | Comando | Saída | Cobertura |

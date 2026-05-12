@@ -1,5 +1,7 @@
 # Análise de Bugs — Sauce Demo
 
+> Evidências visuais disponíveis em [`evidence/screenshots/`](../../evidence/screenshots/) e [`evidence/videos/`](../../evidence/videos/).
+
 ## BUG-001 — Campo Lastname Não Editável (problem_user)
 | Campo | Detalhe |
 |---|---|
@@ -17,6 +19,7 @@
 **Resultado esperado:** Campo aceita digitação normalmente.
 **Resultado obtido:** Campo não aceita nenhuma entrada — `input.value` permanece vazio após digitação.
 **Impacto:** Impossibilidade de finalizar a compra com este usuário.
+**Evidência:** [`evidence/screenshots/08-bug-problem-user-lastname-not-editable.png`](../../evidence/screenshots/08-bug-problem-user-lastname-not-editable.png) · [`evidence/videos/02-bug-problem-user-lastname-chromium.webm`](../../evidence/videos/02-bug-problem-user-lastname-chromium.webm)
 
 ---
 
@@ -35,6 +38,7 @@
 **Resultado esperado:** Cada produto exibe sua imagem correspondente (6 imagens distintas).
 **Resultado obtido:** Todos os produtos exibem a mesma imagem (um cachorro/animal de estimação).
 **Impacto:** Experiência do usuário confusa; impossível identificar produtos visualmente.
+**Evidência:** [`evidence/screenshots/07-bug-problem-user-wrong-images.png`](../../evidence/screenshots/07-bug-problem-user-wrong-images.png)
 
 ---
 
@@ -70,6 +74,7 @@
 **Resultado esperado:** Mensagem de bloqueio com instruções de contato ou recuperação de conta.
 **Resultado obtido:** Mensagem "Sorry, this user has been locked out." sem qualquer orientação adicional.
 **Impacto:** Usuário sem caminho de resolução; potencial abandono da plataforma.
+**Evidência:** [`evidence/screenshots/04-bug-locked-out-user.png`](../../evidence/screenshots/04-bug-locked-out-user.png)
 
 ---
 

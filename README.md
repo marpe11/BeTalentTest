@@ -84,7 +84,28 @@ npm run test:perf:stress
 k6 run api/performance/k6-load.js --out json=test-results/k6-results/load.json
 ```
 
-### Suite Completa
+### Allure Report (UI + API unificados)
+
+> **Pré-requisito:** Java 8+ instalado. Verifique com `java -version`.
+
+```bash
+# Executar UI + API e abrir relatório Allure em um comando
+npm run test:all:allure
+
+# Ou passo a passo:
+npm run test:ui          # gera allure-results/ (Playwright)
+npm run test:api         # adiciona resultados de API em allure-results/
+npm run allure:generate  # compila o relatório → allure-report/
+npm run allure:open      # abre no browser
+```
+
+O relatório Allure consolida resultados de Playwright e Newman em um único dashboard com:
+- Visão geral (passed/failed/broken/skipped)
+- Histórico de execuções e gráficos de tendência
+- Categorias de falha automáticas
+- Screenshots e vídeos embutidos por teste
+
+### Suite Completa (sem Allure)
 
 ```bash
 npm run test:all
@@ -147,6 +168,7 @@ BeTalentTest/
 | **Postman** | Collection API | Formato padrão da indústria; suporte a scripts de teste |
 | **Newman** | Runner CLI | Executa collections Postman via linha de comando; reporter HTML |
 | **k6** | Performance | Scripting em JS, relatórios detalhados, thresholds automatizados |
+| **Allure Report** | Relatórios | Dashboard unificado UI + API com histórico, tendências e screenshots embutidos |
 
 ---
 
@@ -218,8 +240,9 @@ BeTalentTest/
 
 - **Screenshots:** Capturados automaticamente em falhas (configuração `screenshot: 'only-on-failure'`)
 - **Vídeos:** Retidos em falhas + sempre gravados no fluxo de compra completo (`purchase-flow.spec.ts`)
-- **Relatório UI:** `npx playwright show-report playwright-report` após execução
-- **Relatório API:** `test-results/newman-report/report.html` (gerado com `npm run test:api`)
+- **Relatório Allure (unificado):** `npm run test:all:allure` — abre dashboard com UI + API em um único relatório
+- **Relatório UI (Playwright HTML):** `npm run report` — relatório nativo do Playwright em `playwright-report/`
+- **Relatório API (Newman htmlextra):** `test-results/newman-report/report.html` (gerado com `npm run test:api`)
 
 ---
 

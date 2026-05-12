@@ -13,6 +13,15 @@ export default defineConfig({
     ['list'],
     ['html', { outputFolder: 'playwright-report', open: 'never' }],
     ['json', { outputFile: 'test-results/results.json' }],
+    ['allure-playwright', {
+      outputFolder: 'allure-results',
+      suiteTitle: true,
+      environmentInfo: {
+        framework: 'Playwright',
+        language: 'TypeScript',
+        baseURL: 'https://www.saucedemo.com',
+      },
+    }],
   ],
 
   use: {

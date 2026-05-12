@@ -14,18 +14,25 @@
     "test:ui:navigation": "playwright test ui/tests/specs/navigation.spec.ts",
     "test:ui:mobile": "playwright test ui/tests/specs/responsiveness.spec.ts",
     "test:ui:a11y": "playwright test ui/tests/specs/accessibility.spec.ts",
-    "test:api": "newman run api/postman/BeTalent_Booker.postman_collection.json -e api/postman/BeTalent_Booker.postman_environment.json --reporters cli,htmlextra --reporter-htmlextra-export test-results/newman-report/report.html",
+    "test:api": "newman run api/postman/BeTalent_Booker.postman_collection.json -e api/postman/BeTalent_Booker.postman_environment.json --reporters cli,htmlextra,allure --reporter-htmlextra-export test-results/newman-report/report.html --reporter-allure-export allure-results",
     "test:perf:smoke": "k6 run api/performance/k6-smoke.js",
     "test:perf:load": "k6 run api/performance/k6-load.js",
     "test:perf:stress": "k6 run api/performance/k6-stress.js",
     "test:all": "npm run test:ui && npm run test:api",
-    "report": "playwright show-report test-results/playwright-report"
+    "report": "playwright show-report playwright-report",
+    "allure:generate": "allure generate allure-results -o allure-report --clean",
+    "allure:open": "allure open allure-report",
+    "allure:report": "npm run allure:generate && npm run allure:open",
+    "test:all:allure": "npm run test:ui && npm run test:api && npm run allure:report"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.10.0",
     "@playwright/test": "^1.50.0",
+    "allure-commandline": "^2.40.0",
+    "allure-playwright": "^3.8.0",
     "axe-core": "^4.10.0",
     "newman": "^6.2.1",
+    "newman-reporter-allure": "^3.8.0",
     "newman-reporter-htmlextra": "^1.23.1",
     "typescript": "^5.5.0"
   }

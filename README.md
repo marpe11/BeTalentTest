@@ -323,23 +323,38 @@ Todos os usuários usam a senha `secret_sauce`.
 
 ## Cobertura
 
-### Nível 1 — Obrigatório
+### UI — Sauce Demo
+
+#### Nível 1 — Obrigatório
 
 - ✅ Login com todos os tipos de usuário (6 perfis)
-- ✅ Ordenação de produtos (A-Z, Z-A, preço crescente, decrescente)
-- ✅ Fluxo completo de compra (E2E com verificação de math)
-- ✅ Adição e remoção de itens do carrinho
-- ✅ Navegação entre páginas e sidebar
 - ✅ Logout e proteção de rotas autenticadas
-- ✅ Autenticação e CRUD completo na API
-- ✅ Validação de campos obrigatórios e cenários de erro
+- ✅ Ordenação de produtos (A-Z, Z-A, preço crescente, decrescente)
+- ✅ Adição e remoção de itens do carrinho
+- ✅ Fluxo completo de compra E2E com verificação de math (subtotal + tax = total)
+- ✅ Navegação entre páginas e sidebar
 
-### Nível 2 — Diferencial
+#### Nível 2 — Diferencial
 
 - ✅ Responsividade em dispositivos móveis (Pixel 5 + iPhone 13)
 - ✅ Acessibilidade WCAG 2.1 AA via axe-core (7 páginas escaneadas)
-- ✅ Automação UI multi-browser com Playwright (chromium + firefox)
+- ✅ Multi-browser: chromium + firefox
+- ✅ Documentação completa: plano de testes, casos, bugs, melhorias, riscos
+
+---
+
+### API — Restful-Booker
+
+#### Nível 1 — Obrigatório
+
+- ✅ Autenticação (token válido, credenciais inválidas, campos ausentes)
+- ✅ CRUD completo de reservas (GET, POST, PUT, PATCH, DELETE)
+- ✅ Filtros por nome e datas no GET /booking
+- ✅ Validação de campos obrigatórios e cenários de erro documentados
+
+#### Nível 2 — Diferencial
+
+- ✅ Testes de segurança (SQL injection via query param, XSS no body, header de auth incorreto)
 - ✅ Testes de performance com k6 (smoke, load e stress)
-- ✅ Segurança básica na API (SQL injection, XSS, auth incorreta)
+- ✅ Documentação de bugs e quirks da API (7 itens)
 - ✅ Relatório unificado UI + API via Allure Report
-- ✅ Documentação completa (plano, casos, bugs, melhorias, riscos)
